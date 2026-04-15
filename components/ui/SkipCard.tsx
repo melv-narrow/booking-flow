@@ -3,9 +3,9 @@ import type { Skip } from '@/lib/types';
 
 interface SkipCardProps {
   skip: Skip;
-  selected: boolean;
-  onSelect: (skip: Skip) => void;
-  showHeavyWasteLabel?: boolean;
+  isSelected: boolean;
+  onSelect: () => void;
+  'data-testid'?: string;
 }
 
 // Checkmark icon
@@ -57,13 +57,12 @@ function SkipIcon({ disabled }: { disabled: boolean }) {
  * aria-disabled used (not HTML disabled) to keep the element in the tab order
  * while preventing selection — required by the spec.
  */
-export function SkipCard({ skip, selected, onSelect, showHeavyWasteLabel = false }: SkipCardProps) {
+export function SkipCard({ skip, isSelected, onSelect, 'data-testid': testId }: SkipCardProps) {
   const isDisabled = skip.disabled;
-  const testId = `skip-card-${skip.size.replace(/\s+/g, '-').toLowerCase()}`;
 
   function handleSelect() {
     if (!isDisabled) {
-      onSelect(skip);
+      onSelect();
     }
   }
 
@@ -71,14 +70,14 @@ export function SkipCard({ skip, selected, onSelect, showHeavyWasteLabel = false
     if (isDisabled) return;
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      onSelect(skip);
+      onSelect();
     }
   }
 
   return (
     <div
       role="radio"
-      aria-checked={selected}
+      aria-checked={isSelected}
       aria-disabled={isDisabled}
       tabIndex={isDisabled ? -1 : 0}
       data-testid={testId}
@@ -91,7 +90,7 @@ export function SkipCard({ skip, selected, onSelect, showHeavyWasteLabel = false
         // Interactive states
         isDisabled
           ? 'opacity-50 cursor-not-allowed border-border bg-surface-muted'
-          : selected
+          : isSelected
             ? 'border-primary bg-primary-light shadow-card-md cursor-pointer'
             : 'border-border bg-surface hover:border-primary/40 hover:shadow-card cursor-pointer',
         // Focus ring for keyboard nav
@@ -99,7 +98,7 @@ export function SkipCard({ skip, selected, onSelect, showHeavyWasteLabel = false
       ].join(' ')}
     >
       {/* Selected checkmark badge */}
-      {selected && !isDisabled && (
+      {isSelected && !isDisabled && (
         <div
           className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-sm"
           aria-hidden="true"
@@ -122,7 +121,7 @@ export function SkipCard({ skip, selected, onSelect, showHeavyWasteLabel = false
       <p
         className={[
           'font-mono text-lg font-medium leading-none',
-          isDisabled ? 'text-text-muted' : selected ? 'text-primary' : 'text-text-primary',
+          isDisabled ? 'text-text-muted' : isSelected ? 'text-primary' : 'text-text-primary',
         ].join(' ')}
       >
         £{skip.price}
@@ -137,7 +136,7 @@ export function SkipCard({ skip, selected, onSelect, showHeavyWasteLabel = false
           <svg viewBox="0 0 12 12" fill="currentColor" className="w-3 h-3 shrink-0" aria-hidden="true">
             <path fillRule="evenodd" d="M6 1a5 5 0 100 10A5 5 0 006 1zm-.75 4.75a.75.75 0 011.5 0v1.5a.75.75 0 01-1.5 0v-1.5zm.75-2a.75.75 0 100 1.5.75.75 0 000-1.5z" clipRule="evenodd" />
           </svg>
-          {showHeavyWasteLabel ? 'Not available for heavy waste' : 'Not available'}
+          Not available for heavy waste
         </span>
       )}
     </div>
