@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:3000/booking)",
+      "Bash(curl -s -X POST http://localhost:3000/api/postcode/lookup -H \"Content-Type: application/json\" -d '{\"postcode\":\"SW1A 1AA\"}')",
+      "Bash(curl -s \"http://localhost:3000/api/skips?postcode=SW1A1AA&heavyWaste=false\")",
+      "Bash(python -m json.tool)",
+      "Bash(curl -s \"http://localhost:3000/api/skips?postcode=SW1A1AA&heavyWaste=true\")"
+    ]
+  }
+}
