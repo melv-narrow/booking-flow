@@ -12,6 +12,7 @@ interface ButtonProps {
   children: React.ReactNode;
   className?: string;
   'aria-label'?: string;
+  'data-testid'?: string;
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
@@ -46,6 +47,7 @@ export function Button({
   children,
   className = '',
   'aria-label': ariaLabel,
+  'data-testid': dataTestId,
 }: ButtonProps) {
   const isDisabled = disabled || isLoading;
 
@@ -56,6 +58,7 @@ export function Button({
       onClick={onClick}
       aria-label={ariaLabel}
       aria-busy={isLoading}
+      data-testid={dataTestId}
       className={[
         // Base
         'relative inline-flex items-center justify-center gap-2',
