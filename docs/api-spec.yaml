@@ -1,0 +1,522 @@
+openapi: 3.0.3
+info:
+  title: REM Waste Booking Flow API
+  description: |
+    Mock API for the REM Waste skip hire booking flow.
+    All data is deterministic fixture data — no real bookings are made.
+
+    **Base URL (local dev):** `http://localhost:3000`
+
+    **Fixture postcodes:**
+    | Postcode   | Behaviour |
+    |------------|-----------|
+    | SW1A 1AA   | Returns 12 London addresses |
+    | EC1A 1BB   | Returns empty address array |
+    | M1 1AE     | Responds after 1500ms delay |
+    | BS1 4DJ    | 500 on first call; 200 on retry |
+    | Any other valid UK postcode | Returns empty address array |
+
+  version: 1.0.0
+  contact:
+    name: Mel V Narrow — REM Waste QA Assessment
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+tags:
+  - name: Postcode
+    description: Address lookup by UK postcode
+  - name: Waste Types
+    description: Waste type selection and validation
+  - name: Skips
+    description: Available skip sizes and pricing
+  - name: Booking
+    description: Booking confirmation
+
+paths:
+  /api/postcode/lookup:
+    post:
+      tags: [Postcode]
+      summary: Look up addresses by postcode
+      description: |
+        Validates a UK postcode and returns matching addresses.
+        Postcode is normalised to uppercase with a space before the inward code (e.g. `sw1a1aa` → `SW1A 1AA`).
+
+        **Fixture behaviours:**
+        - `SW1A 1AA` → 12 addresses, instant
+        - `EC1A 1BB` → empty array, instant
+        - `M1 1AE`   → 3 addresses, delayed by ~1500ms
+        - `BS1 4DJ`  → 500 on first call, addresses on retry
+        - Unknown valid postcode → empty array
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostcodeLookupRequest'
+            examples:
+              sw1a:
+                summary: SW1A 1AA — 12 addresses returned
+                value:
+                  postcode: "SW1A 1AA"
+              ec1a:
+                summary: EC1A 1BB — empty result
+                value:
+                  postcode: "EC1A 1BB"
+              m1:
+                summary: M1 1AE — 1500ms latency
+                value:
+                  postcode: "M1 1AE"
+              bs1_first:
+                summary: BS1 4DJ — first call (will 500)
+                value:
+                  postcode: "BS1 4DJ"
+              bs1_retry:
+                summary: BS1 4DJ — second call (will succeed)
+                value:
+                  postcode: "BS1 4DJ"
+              unknown:
+                summary: Unknown valid postcode — empty result
+                value:
+                  postcode: "W1A 1AA"
+              invalid:
+                summary: Invalid format — 400
+                value:
+                  postcode: "NOTAPOSTCODE"
+      responses:
+        '200':
+          description: Postcode valid. Returns address list (may be empty).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostcodeLookupResponse'
+              examples:
+                with_addresses:
+                  summary: SW1A 1AA — 12 addresses
+                  value:
+                    postcode: "SW1A 1AA"
+                    addresses:
+                      - id: "addr_1"
+                        line1: "10 Downing Street"
+                        city: "London"
+                      - id: "addr_2"
+                        line1: "11 Downing Street"
+                        city: "London"
+                empty_addresses:
+                  summary: EC1A 1BB — empty
+                  value:
+                    postcode: "EC1A 1BB"
+                    addresses: []
+        '400':
+          description: Invalid postcode format or missing field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                bad_format:
+                  value:
+                    error: "Invalid postcode format"
+                missing_field:
+                  value:
+                    error: "Missing required field: postcode"
+        '500':
+          description: Simulated server error (BS1 4DJ first call only).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Service temporarily unavailable. Please try again."
+
+  /api/waste-types:
+    post:
+      tags: [Waste Types]
+      summary: Submit waste type selection
+      description: |
+        Validates waste type payload.
+        If `plasterboard` is `true`, `plasterboardOption` must be one of:
+        `bag_it` | `mixed_load` | `separate_collection`
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WasteTypeRequest'
+            examples:
+              general:
+                summary: General waste
+                value:
+                  heavyWaste: false
+                  plasterboard: false
+                  plasterboardOption: null
+              heavy:
+                summary: Heavy waste
+                value:
+                  heavyWaste: true
+                  plasterboard: false
+                  plasterboardOption: null
+              plasterboard_bag:
+                summary: Plasterboard — bag it
+                value:
+                  heavyWaste: false
+                  plasterboard: true
+                  plasterboardOption: "bag_it"
+              plasterboard_mixed:
+                summary: Plasterboard — mixed load
+                value:
+                  heavyWaste: false
+                  plasterboard: true
+                  plasterboardOption: "mixed_load"
+              plasterboard_separate:
+                summary: Plasterboard — separate collection
+                value:
+                  heavyWaste: false
+                  plasterboard: true
+                  plasterboardOption: "separate_collection"
+              plasterboard_no_option:
+                summary: Plasterboard without option — 400
+                value:
+                  heavyWaste: false
+                  plasterboard: true
+                  plasterboardOption: null
+      responses:
+        '200':
+          description: Valid payload accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+              example:
+                ok: true
+        '400':
+          description: Missing or invalid fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_option:
+                  summary: plasterboard=true but no option
+                  value:
+                    error: "plasterboardOption must be one of: bag_it, mixed_load, separate_collection"
+                bad_types:
+                  summary: heavyWaste not boolean
+                  value:
+                    error: "heavyWaste and plasterboard must be booleans"
+
+  /api/skips:
+    get:
+      tags: [Skips]
+      summary: List available skips
+      description: |
+        Returns all 8 skip sizes with pricing.
+        When `heavyWaste=true`, skips **8-yard** and **10-yard** are marked `disabled: true`.
+        Disabled skips are always included in the response — the UI decides rendering.
+      parameters:
+        - name: postcode
+          in: query
+          required: false
+          description: Customer postcode (informational only — not used for filtering in this mock)
+          schema:
+            type: string
+          example: "SW1A 1AA"
+        - name: heavyWaste
+          in: query
+          required: false
+          description: Set to `true` to flag heavy waste — disables large skips
+          schema:
+            type: string
+            enum: ["true", "false"]
+          example: "false"
+      responses:
+        '200':
+          description: List of all 8 skips with availability flags.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkipsResponse'
+              examples:
+                general_waste:
+                  summary: General waste — no skips disabled
+                  value:
+                    skips:
+                      - size: "2-yard"
+                        price: 85
+                        disabled: false
+                      - size: "4-yard"
+                        price: 120
+                        disabled: false
+                      - size: "6-yard"
+                        price: 155
+                        disabled: false
+                      - size: "8-yard"
+                        price: 195
+                        disabled: false
+                      - size: "10-yard"
+                        price: 230
+                        disabled: false
+                      - size: "12-yard"
+                        price: 265
+                        disabled: false
+                      - size: "14-yard"
+                        price: 305
+                        disabled: false
+                      - size: "16-yard"
+                        price: 345
+                        disabled: false
+                heavy_waste:
+                  summary: Heavy waste — 8-yard and 10-yard disabled
+                  value:
+                    skips:
+                      - size: "2-yard"
+                        price: 85
+                        disabled: false
+                      - size: "4-yard"
+                        price: 120
+                        disabled: false
+                      - size: "6-yard"
+                        price: 155
+                        disabled: false
+                      - size: "8-yard"
+                        price: 195
+                        disabled: true
+                      - size: "10-yard"
+                        price: 230
+                        disabled: true
+                      - size: "12-yard"
+                        price: 265
+                        disabled: false
+                      - size: "14-yard"
+                        price: 305
+                        disabled: false
+                      - size: "16-yard"
+                        price: 345
+                        disabled: false
+
+  /api/booking/confirm:
+    post:
+      tags: [Booking]
+      summary: Confirm a booking
+      description: |
+        Validates the complete booking payload and returns a deterministic booking ID.
+
+        **Booking ID is deterministic:** same `postcode` + `skipSize` + `price` always returns same `BK-XXXXX` code.
+        This ensures Playwright tests are stable across runs.
+
+        **Address requirement:** either `addressId` OR `manualAddress` must be present (not both required).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingConfirmRequest'
+            examples:
+              general_waste:
+                summary: General waste booking
+                value:
+                  postcode: "SW1A 1AA"
+                  addressId: "addr_1"
+                  heavyWaste: false
+                  plasterboard: false
+                  plasterboardOption: null
+                  skipSize: "4-yard"
+                  price: 120
+              heavy_waste:
+                summary: Heavy waste booking
+                value:
+                  postcode: "SW1A 1AA"
+                  addressId: "addr_1"
+                  heavyWaste: true
+                  plasterboard: false
+                  plasterboardOption: null
+                  skipSize: "12-yard"
+                  price: 265
+              plasterboard:
+                summary: Plasterboard booking
+                value:
+                  postcode: "SW1A 1AA"
+                  addressId: "addr_1"
+                  heavyWaste: false
+                  plasterboard: true
+                  plasterboardOption: "bag_it"
+                  skipSize: "6-yard"
+                  price: 155
+              manual_address:
+                summary: Manual address entry
+                value:
+                  postcode: "EC1A 1BB"
+                  manualAddress: "Flat 2, 10 High Street, London"
+                  heavyWaste: false
+                  plasterboard: false
+                  plasterboardOption: null
+                  skipSize: "2-yard"
+                  price: 85
+              missing_fields:
+                summary: Missing required fields — 400
+                value:
+                  postcode: "SW1A 1AA"
+      responses:
+        '200':
+          description: Booking confirmed. Returns deterministic booking ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingConfirmResponse'
+              example:
+                status: "success"
+                bookingId: "BK-74231"
+        '400':
+          description: Required fields missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Missing required fields: heavyWaste, plasterboard, skipSize, price, addressId or manualAddress"
+
+components:
+  schemas:
+    PostcodeLookupRequest:
+      type: object
+      required: [postcode]
+      properties:
+        postcode:
+          type: string
+          description: UK postcode. Case-insensitive. Space optional.
+          example: "SW1A 1AA"
+
+    Address:
+      type: object
+      required: [id, line1, city]
+      properties:
+        id:
+          type: string
+          example: "addr_1"
+        line1:
+          type: string
+          example: "10 Downing Street"
+        city:
+          type: string
+          example: "London"
+
+    PostcodeLookupResponse:
+      type: object
+      required: [postcode, addresses]
+      properties:
+        postcode:
+          type: string
+          description: Normalised postcode (uppercase, with space)
+          example: "SW1A 1AA"
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+
+    WasteTypeRequest:
+      type: object
+      required: [heavyWaste, plasterboard]
+      properties:
+        heavyWaste:
+          type: boolean
+          example: false
+        plasterboard:
+          type: boolean
+          example: false
+        plasterboardOption:
+          type: string
+          nullable: true
+          enum: [bag_it, mixed_load, separate_collection, null]
+          description: Required when plasterboard is true.
+          example: null
+
+    OkResponse:
+      type: object
+      required: [ok]
+      properties:
+        ok:
+          type: boolean
+          example: true
+
+    Skip:
+      type: object
+      required: [size, price, disabled]
+      properties:
+        size:
+          type: string
+          example: "4-yard"
+        price:
+          type: number
+          description: Price in GBP (£)
+          example: 120
+        disabled:
+          type: boolean
+          description: True when skip is unavailable for the selected waste type.
+          example: false
+
+    SkipsResponse:
+      type: object
+      required: [skips]
+      properties:
+        skips:
+          type: array
+          minItems: 8
+          maxItems: 8
+          items:
+            $ref: '#/components/schemas/Skip'
+
+    BookingConfirmRequest:
+      type: object
+      required: [postcode, heavyWaste, plasterboard, skipSize, price]
+      properties:
+        postcode:
+          type: string
+          example: "SW1A 1AA"
+        addressId:
+          type: string
+          description: Required unless manualAddress is provided.
+          example: "addr_1"
+        manualAddress:
+          type: string
+          description: Required unless addressId is provided.
+          example: "Flat 2, 10 High Street, London"
+        heavyWaste:
+          type: boolean
+          example: false
+        plasterboard:
+          type: boolean
+          example: false
+        plasterboardOption:
+          type: string
+          nullable: true
+          enum: [bag_it, mixed_load, separate_collection, null]
+          example: null
+        skipSize:
+          type: string
+          example: "4-yard"
+        price:
+          type: number
+          example: 120
+
+    BookingConfirmResponse:
+      type: object
+      required: [status, bookingId]
+      properties:
+        status:
+          type: string
+          enum: [success]
+          example: "success"
+        bookingId:
+          type: string
+          description: Deterministic BK-XXXXX identifier based on postcode + skipSize + price.
+          pattern: "^BK-[0-9]{5}$"
+          example: "BK-74231"
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: "Invalid postcode format"

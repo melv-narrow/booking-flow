@@ -252,7 +252,7 @@ All base UI components built, visually tested, and consistent. No step-specific 
 6. **Write an API test script** at `/lib/test-api.ts` (run with `ts-node`) that calls each endpoint and logs pass/fail against the spec. This is a development tool, not a Playwright test.
 
 ### Human Checkpoint 3A
-> **Critical validation step.** Run the dev server. Use a REST client (Postman, Insomnia, or `curl`) to manually test all 4 endpoints against every fixture postcode and edge case. Compare each response to the spec in the assessment PDF. Fix any discrepancies before moving on. The assessor will run automated checks against this API.
+> **Critical validation step.** Run the dev server. Use a REST client (Postman, Insomnia, or `curl`) to manually test all 4 endpoints against every fixture postcode and edge case. Compare each response to the spec in the qa-assessment.md. Fix any discrepancies before moving on. The assessor will run automated checks against this API.
 
 ### Deliverable
 All 4 API routes operational, spec-compliant, and manually verified. Fixtures isolated in `/lib/fixtures.ts`.
