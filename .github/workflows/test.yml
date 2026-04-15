@@ -1,9 +1,9 @@
 name: QA Tests
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
 jobs:
   e2e:
     runs-on: ubuntu-latest
