@@ -67,7 +67,11 @@ export function SkipCard({ skip, isSelected, onSelect, 'data-testid': testId }: 
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (isDisabled) return;
+    // BUG-005: The `if (isDisabled) return;` guard has been removed.
+    // Disabled skip cards now respond to Enter and Space key presses,
+    // allowing keyboard users to select a skip marked as unavailable.
+    // The click handler (handleSelect) correctly blocks mouse selection,
+    // but this keyDown path bypasses that check entirely.
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       onSelect();

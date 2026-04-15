@@ -60,12 +60,11 @@ export function WasteTypeStep({
   const [selectedPlasterboardOption, setSelectedPlasterboardOption] =
     useState<PlasterboardOption | null>(initialPlasterboardOption);
 
-  // Clear plasterboard option when switching away from plasterboard
-  useEffect(() => {
-    if (selectedWasteType !== 'plasterboard') {
-      setSelectedPlasterboardOption(null);
-    }
-  }, [selectedWasteType]);
+  // BUG-004: plasterboardOption is NOT cleared when the user switches away from
+  // 'plasterboard'. The useEffect that should reset it has been removed.
+  // This causes a state leak: if the user picks plasterboard + an option, then
+  // switches to general/heavy, the stale plasterboardOption remains in local
+  // state and is passed to onComplete, appearing in the Review step summary.
 
   const handleNext = () => {
     if (!selectedWasteType) return;
