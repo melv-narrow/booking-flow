@@ -57,10 +57,10 @@ export function ReviewStep({
     : null;
 
   const handleConfirm = async () => {
-    // BUG-006: The synchronous `submitAttemptedRef` guard has been removed.
-    // The function now relies solely on the `isSubmitting` state flag, which is
-    // set asynchronously in the next render cycle. If the user double-clicks
-    // before that re-render, a second call fires — both requests race to the API.
+    // Prevent double-submit with ref flag (synchronous — blocks before any re-render)
+    if (submitAttemptedRef.current) return;
+    submitAttemptedRef.current = true;
+
     setIsSubmitting(true);
     setError(null);
 
@@ -91,6 +91,7 @@ export function ReviewStep({
       setBookingId(data.bookingId);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
+      submitAttemptedRef.current = false; // Allow retry on error
     } finally {
       setIsSubmitting(false);
     }
