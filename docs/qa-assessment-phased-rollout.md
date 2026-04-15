@@ -343,7 +343,7 @@ Complete 4-step booking flow functional in browser. All states visible (loading,
 
 ## Phase 5 — Manual Test Documentation
 
-**Objective:** Produce a `manual-tests.md` that demonstrates deep QA thinking. AI generates the first draft; Human audits for quality and adds the edge cases only a human would think of.
+**Objective:** Produce a `manual-tests.md` that demonstrates deep QA thinking centered around ISTQB standards. AI generates the first draft; Human audits for quality and adds the edge cases only a human would think of.
 
 **Who does this:** AI generates 40 test cases in correct format; Human reviews, reorders for logical flow, and adds personal observations from Phase 4 checkpoint.
 
