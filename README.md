@@ -4,7 +4,7 @@
 This project implements a complete, production-grade skip hire booking flow for REM Waste. It demonstrates a rigorous approach to software quality engineering by integrating full-stack functionality with deterministic testing, responsive UI architecture, and robust automated test coverage using Playwright and GitHub Actions.
 
 ## Live Demo
-[Vercel URL Placeholder - Add Link Here]
+[https://booking-flow-mocha.vercel.app/](https://booking-flow-mocha.vercel.app/)
 
 ## Local Setup
 ```bash
