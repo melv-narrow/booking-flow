@@ -733,16 +733,4 @@ Live Vercel URL. GitHub repo with full source. All documentation files present. 
 
 ---
 
-## Appendix — Day-by-Day Mapping
-
-| Day | Date | Phases |
-|-----|------|--------|
-| Day 1 | 15 Apr (Today) | Phase 0 + Phase 1 + Phase 3 |
-| Day 2 | 16 Apr | Phase 2 + Phase 4 |
-| Day 3 | 17 Apr | Phase 5 + Phase 6 |
-| Day 4 | 18 Apr | Phase 7 + Phase 8 |
-| Day 5 | 19 Apr | Phase 9 + Phase 10 + Submit |
-
----
-
-*Document prepared for Mel V Narrow | REM Waste QA Assessment | April 2026*
+*Document prepared for Melvin | REM Waste QA Assessment | April 2026*
