@@ -38,8 +38,8 @@ To run tests locally:
 ```bash
 npm run test:e2e
 ```
-**CI / CD**: Tests automatically run inside GitHub Actions against every push to the `main` branch. 
-[![QA Tests](https://github.com/[YOUR-USERNAME]/[YOUR-REPO]/actions/workflows/test.yml/badge.svg)](https://github.com/[YOUR-USERNAME]/[YOUR-REPO]/actions/workflows/test.yml)
+**CI / CD**: Tests automatically run inside GitHub Actions against every push to the `master` branch. 
+[![QA Tests](https://github.com/melv-narrow/booking-flow/actions/workflows/test.yml/badge.svg)](https://github.com/melv-narrow/booking-flow/actions/workflows/test.yml)
 
 ## Lighthouse / Accessibility
 A comprehensive performance and accessibility report evaluated against production builds.

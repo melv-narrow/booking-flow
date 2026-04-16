@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 // REMINDER: Ensure all selectors use data-testid attributes!
 
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './automation/e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
