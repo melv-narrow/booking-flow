@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# REM Waste — Booking Flow QA Assessment
 
-## Getting Started
+## Project Overview
+This project implements a complete, production-grade skip hire booking flow for REM Waste. It demonstrates a rigorous approach to software quality engineering by integrating full-stack functionality with deterministic testing, responsive UI architecture, and robust automated test coverage using Playwright and GitHub Actions.
 
-First, run the development server:
+## Live Demo
+[Vercel URL Placeholder - Add Link Here]
 
+## Local Setup
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Architecture Decisions
+- **Next.js & App Router**: Leveraged for built-in API routes, maintaining a consolidated frontend/backend structure without the overhead of an external Express server.
+- **Tailwind CSS**: Adopted for strict design token compliance, rapid iteration on custom components, and eliminating disjointed CSS files.
+- **Client-Side State via Props**: Used simple `useState` and prop drilling instead of complex state layers (like Redux or Zustand) because the 4-step wizard requirements warrant an elegant, minimal native React solution.
+- **Accessible Native Elements**: Preferred native OS dropdowns (`<select>`) and proper ARIA labels to ensure optimal, out-of-the-box accessibility without over-engineering custom UI widgets.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Test Data & Mocking Strategy
+Deterministic testing is imperative for reliable automation. Fixtures are isolated within `/lib/fixtures.ts` to strictly simulate expected behaviour, including specific network latency scenarios (`M1 1AE`), targeted API failures (`BS1 4DJ` retry logic), and distinct UI empty states. This ensures E2E testing evaluates true application paths rather than flaky boundaries.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## AI Usage in This Project
+I utilized AI tools (Claude/Copilot) primarily for generating initial structural boilerplate, scaffolding Playwright tests, and preparing deterministic API fixtures. All logic flow validations, test case rationale, bug identifications, and UI functionality decisions were governed, reviewed, and finalized purely by human insight.
 
-## Learn More
+## Manual Test Coverage
+Detailed, ISTQB-standard manual testing scenarios exist to evaluate boundary cases and state transitions:
+[View Manual Tests Requirements (35+ test cases)](./manual-tests.md)
 
-To learn more about Next.js, take a look at the following resources:
+## Bug Reports
+I've successfully identified, documented, and provided corresponding fixes for subtle edge cases:
+[View Bug Reports](./bug-reports.md)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Automation
+Automated end-to-end tests exercise all crucial booking paths, including state validations and disabled component paths.
+To run tests locally:
+```bash
+npm run test:e2e
+```
+**CI / CD**: Tests automatically run inside GitHub Actions against every push to the `main` branch. 
+[![QA Tests](https://github.com/[YOUR-USERNAME]/[YOUR-REPO]/actions/workflows/test.yml/badge.svg)](https://github.com/[YOUR-USERNAME]/[YOUR-REPO]/actions/workflows/test.yml)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Lighthouse / Accessibility
+A comprehensive performance and accessibility report evaluated against production builds.
+[View Lighthouse Report](./ui/lighthouse-report.html)
