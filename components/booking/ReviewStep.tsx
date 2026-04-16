@@ -57,7 +57,7 @@ export function ReviewStep({
     : null;
 
   const handleConfirm = async () => {
-    // Prevent double-submit with ref flag
+    // Prevent double-submit with ref flag (synchronous — blocks before any re-render)
     if (submitAttemptedRef.current) return;
     submitAttemptedRef.current = true;
 

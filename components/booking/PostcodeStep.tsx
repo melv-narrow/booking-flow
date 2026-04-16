@@ -128,7 +128,7 @@ export function PostcodeStep({
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-text-primary mb-2">Enter your location</h2>
-        <p className="text-text-secondary">We'll use this to find available skips in your area</p>
+        <p className="text-text-secondary">We&apos;ll use this to find available skips in your area</p>
       </div>
 
       <div className="space-y-4">

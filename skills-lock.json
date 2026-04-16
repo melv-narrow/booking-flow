@@ -16,6 +16,11 @@
       "sourceType": "github",
       "computedHash": "516bd2154eb843a8240e43d5b285229129853114ad7075a5e141e1c08e408c84"
     },
+    "istqb-foundation": {
+      "source": "hiccup-za/qa-skills",
+      "sourceType": "github",
+      "computedHash": "110af750a913d350badbd912214b37d28461fa51181f7dd6f920ff7a1f2b1418"
+    },
     "refactor": {
       "source": "github/awesome-copilot",
       "sourceType": "github",

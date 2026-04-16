@@ -5,7 +5,7 @@ import { Skip } from '@/lib/types';
 import { Button } from '@/components/ui/Button';
 import { SkipCard } from '@/components/ui/SkipCard';
 import { Alert } from '@/components/ui/Alert';
-import { Spinner } from '@/components/ui/Spinner';
+
 
 interface SkipSelectionStepProps {
   postcode: string;

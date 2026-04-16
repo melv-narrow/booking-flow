@@ -546,9 +546,9 @@ The cleanest approach: **deliberately introduce 3 subtle bugs, document them, th
    name: QA Tests
    on:
      push:
-       branches: [main]
+       branches: [master]
      pull_request:
-       branches: [main]
+       branches: [master]
    jobs:
      e2e:
        runs-on: ubuntu-latest

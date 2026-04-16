@@ -6,7 +6,18 @@
       "Bash(curl -s -X POST http://localhost:3000/api/postcode/lookup -H \"Content-Type: application/json\" -d '{\"postcode\":\"SW1A 1AA\"}')",
       "Bash(curl -s \"http://localhost:3000/api/skips?postcode=SW1A1AA&heavyWaste=false\")",
       "Bash(python -m json.tool)",
-      "Bash(curl -s \"http://localhost:3000/api/skips?postcode=SW1A1AA&heavyWaste=true\")"
+      "Bash(curl -s \"http://localhost:3000/api/skips?postcode=SW1A1AA&heavyWaste=true\")",
+      "Bash(gh pr *)",
+      "Bash(git fetch *)",
+      "Bash(git merge *)",
+      "Bash(git diff *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(grep *)",
+      "Bash(gh run *)",
+      "Bash(git pull *)"
     ]
   }
 }

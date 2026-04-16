@@ -27,16 +27,12 @@ function CheckIcon() {
  * Connector line fills teal once step is complete.
  */
 export function StepIndicator({ currentStep, completedSteps }: StepIndicatorProps) {
-  const currentIndex = STEPS.findIndex((s) => s.id === currentStep);
-
   return (
     <nav aria-label="Booking progress" className="w-full pb-6">
       <ol className="flex items-center justify-between">
         {STEPS.map((step, idx) => {
           const isCompleted = completedSteps.includes(step.id);
           const isCurrent = step.id === currentStep;
-          const isUpcoming = !isCompleted && !isCurrent;
-
           return (
             <li key={step.id} className="flex items-center flex-1 last:flex-none">
               {/* Step node */}
